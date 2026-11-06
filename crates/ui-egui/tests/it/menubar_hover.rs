@@ -18,6 +18,9 @@ const IN_ZOOM: &str = "Extents";
 fn harness() -> Harness<'static, CadApp> {
     let mut app = CadApp::new(Session::default(), Services::default());
     app.ui.in_window_menu = true;
+    // This suite targets the classic menu bar. The drafting ribbon contains a
+    // separate "View" tab, which otherwise makes title queries ambiguous.
+    app.ui.autocad_ribbon = false;
     let mut harness = Harness::builder().with_size(vec2(1280.0, 760.0)).build_ui_state(
         |ui, app: &mut CadApp| {
             app.logic(&ui.ctx().clone());
