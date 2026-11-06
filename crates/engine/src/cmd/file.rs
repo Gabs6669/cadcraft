@@ -858,7 +858,10 @@ fn check_loss_policy(cmd: &str, p: &Value, lost: &std::collections::BTreeMap<Str
     };
     if abort && !lost.is_empty() {
         let summary = lost.iter().map(|(kind, count)| format!("{count} {kind}")).collect::<Vec<_>>().join(", ");
-        return Err(bad(cmd, format!("save refused to prevent data loss: {summary}; save as a compatible DXF or use lossPolicy \"allow\" after reviewing the risk")));
+        return Err(bad(
+            cmd,
+            format!("save refused to prevent data loss: {summary}; save as a compatible DXF or use lossPolicy \"allow\" after reviewing the risk"),
+        ));
     }
     Ok(())
 }

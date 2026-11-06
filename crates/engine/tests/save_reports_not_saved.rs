@@ -58,20 +58,15 @@ fn dwg_loss_audit_includes_2d_metadata_and_dxf_does_not() {
     use cadcraft_engine::doc::foreign::{Foreign, ForeignExtra};
 
     let mut d = Drawing::new_imperial();
-    let h = d.add(
-        &Space::Model,
-        Common::default(),
-        EntityKind::Line(cadcraft_engine::doc::Line { a: cadcraft_engine::doc::Vec3::ZERO, b: cadcraft_engine::doc::Vec3::new(10.0, 0.0, 0.0) }),
-    ).unwrap();
-    let extra = ForeignExtra {
-        reactors: vec![h],
-        color_book: Some(("Office Book".into(), "Office Red".into())),
-        ..ForeignExtra::default()
-    };
-    let record = ForeignExtra {
-        xdata: vec![RawTag { code: 1001, value: "OFFICE_APP".into() }],
-        ..ForeignExtra::default()
-    };
+    let h = d
+        .add(
+            &Space::Model,
+            Common::default(),
+            EntityKind::Line(cadcraft_engine::doc::Line { a: cadcraft_engine::doc::Vec3::ZERO, b: cadcraft_engine::doc::Vec3::new(10.0, 0.0, 0.0) }),
+        )
+        .unwrap();
+    let extra = ForeignExtra { reactors: vec![h], color_book: Some(("Office Book".into(), "Office Red".into())), ..ForeignExtra::default() };
+    let record = ForeignExtra { xdata: vec![RawTag { code: 1001, value: "OFFICE_APP".into() }], ..ForeignExtra::default() };
     let mut foreign = Foreign::default();
     foreign.entities.insert(h, extra);
     foreign.records.insert(("LAYER".into(), "WALLS".into()), record);
@@ -79,13 +74,7 @@ fn dwg_loss_audit_includes_2d_metadata_and_dxf_does_not() {
 
     assert_eq!(
         not_saved_as(&d, Version::R2018),
-        [
-            ("ENTITY COLOR BOOKS".into(), 1),
-            ("ENTITY REACTORS".into(), 1),
-            ("TABLE/BLOCK XDATA".into(), 1),
-        ]
-        .into_iter()
-        .collect()
+        [("ENTITY COLOR BOOKS".into(), 1), ("ENTITY REACTORS".into(), 1), ("TABLE/BLOCK XDATA".into(), 1),].into_iter().collect()
     );
 
     let mut s = Session::empty();
