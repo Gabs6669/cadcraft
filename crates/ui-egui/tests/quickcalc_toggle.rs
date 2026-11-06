@@ -140,6 +140,7 @@ fn window_menu_toggle_preserves_calculator_history_and_command_line_input() {
 fn toggle_restores_floating_or_docked_location_without_hiding_other_panels() {
     for floating in [false, true] {
         let mut app = CadApp::new(Session::default(), Services::default());
+        app.run("ui.toggle.toolsets", json!({"on":true})).unwrap();
         app.run("ui.panel.quickcalc", Value::Null).unwrap();
         let params = if floating {
             json!({"operation":"float", "panel":"quickCalc", "rect":[80,120,360,480]})
@@ -172,6 +173,7 @@ fn explicit_opens_still_reveal_and_calculations_do_not_open_the_palette() {
         assert!(app.cmdline(command).is_none());
         assert_eq!(app.ui.docking.layout, layout, "{command} must not toggle an open palette");
     }
+    app.run("ui.toggle.toolsets", json!({"on":true})).unwrap();
     app.run("ui.dock", json!({"operation":"move", "panel":"quickCalc", "target":"toolSets", "zone":"center"})).unwrap();
     app.run("ui.dock", json!({"operation":"activate", "panel":"toolSets"})).unwrap();
     app.run("ui.panel.quickcalc", Value::Null).unwrap();

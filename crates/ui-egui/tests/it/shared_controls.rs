@@ -91,12 +91,15 @@ fn drafting_button_keyboard_disabled_state_and_click_cancellation() {
 
 #[test]
 fn drafting_palette_pointer_and_keyboard_start_the_same_commands() {
+    let mut app = app();
+    app.ui.autocad_ribbon = false;
+    app.ui.show_toolsets = true;
     let mut h = Harness::builder().with_size(vec2(1600.0, 1000.0)).build_ui_state(
         |ui, app: &mut CadApp| {
             app.logic(&ui.ctx().clone());
             app.ui(ui);
         },
-        app(),
+        app,
     );
     h.run_steps(5);
     h.get_by_label("Line").click();
@@ -136,12 +139,14 @@ fn right_palettes_collapse_arrow_hides_menu() {
 
 #[test]
 fn toolsets_collapse_arrow_hides_menu() {
+    let mut app = app();
+    app.ui.show_toolsets = true;
     let mut h = Harness::builder().with_size(vec2(1600.0, 1000.0)).build_ui_state(
         |ui, app: &mut CadApp| {
             app.logic(&ui.ctx().clone());
             cadcraft_ui_egui::palettes::toolsets(app, ui);
         },
-        app(),
+        app,
     );
     h.run_steps(5);
     assert!(h.state().ui.show_toolsets);
