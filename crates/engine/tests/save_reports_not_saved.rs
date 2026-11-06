@@ -62,7 +62,7 @@ fn dwg_loss_audit_includes_2d_metadata_and_dxf_does_not() {
         .add(
             &Space::Model,
             Common::default(),
-            EntityKind::Line(cadcraft_engine::doc::Line { a: cadcraft_engine::doc::Vec3::ZERO, b: cadcraft_engine::doc::Vec3::new(10.0, 0.0, 0.0) }),
+            EntityKind::Line(cadcraft_engine::doc::Line { a: cadcraft_engine::geom::Vec3::ZERO, b: cadcraft_engine::geom::Vec3::new(10.0, 0.0, 0.0) }),
         )
         .unwrap();
     let extra = ForeignExtra { reactors: vec![h], color_book: Some(("Office Book".into(), "Office Red".into())), ..ForeignExtra::default() };
