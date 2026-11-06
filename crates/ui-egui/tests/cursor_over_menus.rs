@@ -101,10 +101,10 @@ fn docked_palettes_keep_the_os_cursor_visible() {
     hover_canvas(&mut harness);
     assert_eq!(cursor(&harness), egui::CursorIcon::None);
 
-    // Layers and Properties are docked on the right by default; Tool Sets starts collapsed.
+    // Properties is docked on the right by default; Layers moves to the ribbon.
     // Use a point in the visible right palette, rather than the drawing at x=100.
     let palette = egui::pos2(1100.0, 300.0);
-    assert!(harness.state().ui.docking.layout.contains(&cadcraft_ui_egui::docking::Panel::Layers));
+    assert!(harness.state().ui.docking.layout.contains(&cadcraft_ui_egui::docking::Panel::Properties));
     assert!(!harness.state().canvas.rect.is_some_and(|canvas| canvas.contains(palette)), "the palette is outside the canvas");
     harness.hover_at(palette);
     harness.run_steps(3);

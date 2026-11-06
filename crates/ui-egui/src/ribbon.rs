@@ -3,7 +3,9 @@
 //! This is original CADCraft UI, using CADCraft's own artwork and commands. It
 //! never reads or embeds another application's resource files.
 
+use cadcraft_color::Color;
 use egui::{Align2, FontId, Rect, Sense, pos2, vec2};
+use serde_json::json;
 
 use crate::CadApp;
 use crate::icons::{self, Icon};
@@ -205,6 +207,82 @@ fn tool_button(ui: &mut egui::Ui, icon: Icon, command: &str, label: &str) -> boo
     known && response.clicked()
 }
 
+/// Current layer picker in the Home ribbon, with the same per-layer controls as
+/// the optional Layers palette. The document, not UI state, is authoritative.
+fn layer_controls(app: &mut CadApp, ui: &mut egui::Ui, clicked: &mut Option<&'static str>) {
+    let Ok(doc) = app.session.doc() else { return };
+    let current = doc.header.str("CLAYER", "0");
+    let layers: Vec<_> = doc.layers.iter().map(|l| (l.name.clone(), l.on, l.frozen, l.locked, l.color)).collect();
+    let current_color = layers.iter().find(|layer| layer.0.eq_ignore_ascii_case(&current)).map_or(Color::Index(7), |layer| layer.4);
+    let mut next_current = None;
+    let mut next_state: Option<(String, &'static str, bool)> = None;
+
+    ui.set_min_width(260.0);
+    ui.horizontal(|ui| {
+        ui.spacing_mut().item_spacing.x = 2.0;
+        for (icon, command, label) in [
+            (Icon::LayerProps, "ui.dialog.layers", "Layer Properties Manager"),
+            (Icon::LayerOff, "layoff", "Layer Off"),
+            (Icon::LayerIso, "layiso", "Isolate Layer"),
+            (Icon::MakeCurrent, "laymcur", "Make Current"),
+            (Icon::LayerFreeze, "layfrz", "Freeze Layer"),
+        ] {
+            if icons::button(ui, icon, 23.0, crate::i18n::t(label), false).clicked() {
+                *clicked = Some(command);
+            }
+        }
+    });
+    ui.add_space(2.0);
+    ui.horizontal(|ui| {
+        let rgb = current_color.resolve(Color::Index(7), Color::Index(7));
+        let (swatch, _) = ui.allocate_exact_size(vec2(14.0, 14.0), Sense::hover());
+        ui.painter().rect_filled(swatch, 2.0, egui::Color32::from_rgb(rgb.0, rgb.1, rgb.2));
+        craft_ui::ComboBox::from_id_salt("ribbon-current-layer").width(226.0).selected_text(current.as_str()).show_ui(ui, |ui| {
+            egui::ScrollArea::vertical().max_height(310.0).show(ui, |ui| {
+                for (name, on, frozen, locked, color) in &layers {
+                    ui.horizontal(|ui| {
+                        ui.spacing_mut().item_spacing.x = 3.0;
+                        if icons::button(ui, if *on { Icon::Bulb } else { Icon::BulbOff }, 18.0, crate::i18n::t("On/Off"), false).clicked() {
+                            next_state = Some((name.clone(), "on", !*on));
+                        }
+                        if icons::button(
+                            ui,
+                            if *frozen { Icon::Snowflake } else { Icon::Sun },
+                            18.0,
+                            crate::i18n::t("Freeze/Thaw"),
+                            false,
+                        )
+                        .clicked()
+                        {
+                            next_state = Some((name.clone(), "frozen", !*frozen));
+                        }
+                        if icons::button(ui, if *locked { Icon::Lock } else { Icon::Unlock }, 18.0, crate::i18n::t("Lock/Unlock"), false).clicked() {
+                            next_state = Some((name.clone(), "locked", !*locked));
+                        }
+                        let rgb = color.resolve(Color::Index(7), Color::Index(7));
+                        ui.colored_label(egui::Color32::from_rgb(rgb.0, rgb.1, rgb.2), "■");
+                        if ui.selectable_label(name.eq_ignore_ascii_case(&current), name).clicked() {
+                            next_current = Some(name.clone());
+                            ui.close();
+                        }
+                    });
+                }
+            });
+        });
+    });
+    ui.label(egui::RichText::new(crate::i18n::t("Current layer")).size(10.5).color(Tokens::get().text_dim));
+    if let Some(name) = next_current {
+        if let Err(error) = app.run("layer.current", json!({ "name": name })) {
+            app.set_status(error);
+        }
+    }
+    if let Some((name, key, value)) = next_state {
+        if let Err(error) = app.run("layer.set", json!({ "name": name, key: value })) {
+            app.set_status(error);
+        }
+    }
+}
+
 /// Draw the original CADCraft ribbon immediately beneath the menu bar.
 pub fn show(app: &mut CadApp, ui: &mut egui::Ui) {
     if !app.ui.autocad_ribbon {
@@ -237,21 +315,25 @@ pub fn show(app: &mut CadApp, ui: &mut egui::Ui) {
                     for group in groups(&selected) {
                         ui.vertical(|ui| {
                             ui.set_min_height(94.0);
-                            egui::Grid::new(("cc_ribbon_group", selected.as_str(), group.label)).num_columns(4).spacing(vec2(1.0, 2.0)).show(
-                                ui,
-                                |ui| {
-                                    for (i, (icon, command, label)) in group.tools.iter().enumerate() {
-                                        if tool_button(ui, *icon, command, label) {
-                                            clicked = Some(*command);
+                            if selected == "home" && group.label == "Layers" {
+                                layer_controls(app, ui, &mut clicked);
+                            } else {
+                                egui::Grid::new(("cc_ribbon_group", selected.as_str(), group.label))
+                                    .num_columns(4)
+                                    .spacing(vec2(1.0, 2.0))
+                                    .show(ui, |ui| {
+                                        for (i, (icon, command, label)) in group.tools.iter().enumerate() {
+                                            if tool_button(ui, *icon, command, label) {
+                                                clicked = Some(*command);
+                                            }
+                                            if i % 4 == 3 {
+                                                ui.end_row();
+                                            }
                                         }
-                                        if i % 4 == 3 {
-                                            ui.end_row();
-                                        }
-                                    }
-                                },
-                            );
-                            ui.add_space(2.0);
-                            ui.label(egui::RichText::new(crate::i18n::t(group.label)).size(10.5).color(t.text_dim));
+                                    });
+                                ui.add_space(2.0);
+                                ui.label(egui::RichText::new(crate::i18n::t(group.label)).size(10.5).color(t.text_dim));
+                            }
                         });
                         ui.separator();
                     }
@@ -267,6 +349,26 @@ pub fn show(app: &mut CadApp, ui: &mut egui::Ui) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn drafting_workspace_keeps_layers_in_the_ribbon_and_properties_on_the_side() {
+        use crate::docking::Panel;
+        use crate::Services;
+        use cadcraft_engine::Session;
+
+        let mut app = CadApp::new(Session::default(), Services::default());
+        crate::docking::validate(&app.ui.docking).unwrap();
+        assert!(app.ui.docking.layout.contains(&Panel::Properties));
+        assert!(!app.ui.docking.layout.contains(&Panel::Layers));
+        assert!(!app.ui.docking.layout.contains(&Panel::ToolSets));
+        app.run("ui.dock", json!({ "operation": "open", "panel": "layers" })).unwrap();
+        assert!(app.ui.docking.layout.contains(&Panel::Layers), "the old palette remains available on demand");
+        app.run("ui.dock.reset", json!({})).unwrap();
+        assert!(!app.ui.docking.layout.contains(&Panel::Layers), "ribbon layout reset hides the redundant palette");
+        app.ui.autocad_ribbon = false;
+        app.run("ui.dock.reset", json!({})).unwrap();
+        assert!(app.ui.docking.layout.contains(&Panel::Layers), "classic layout still restores both palettes");
+    }
 
     #[test]
     fn every_ribbon_tab_has_groups_and_all_keys_are_unique() {

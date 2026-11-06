@@ -21,6 +21,7 @@ fn harness(state: Option<UiState>, width: f32, scale: f32) -> Harness<'static, C
         // The default ribbon keeps Tool Sets hidden until explicitly opened.
         app.ui.autocad_ribbon = false;
         app.ui.show_toolsets = true;
+        app.ui.docking = cadcraft_ui_egui::docking::default_workspace();
     }
     app.ui.in_window_menu = false;
     app.integrated_titlebar = true;
