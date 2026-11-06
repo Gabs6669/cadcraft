@@ -225,9 +225,11 @@ fn run_ui_toggle_command(app: &mut CadApp, id: &str, params: &Value) -> Option<R
             toggle(&mut app.ui.autocad_ribbon, params);
             if app.ui.autocad_ribbon {
                 app.ui.show_toolsets = false;
+                app.ui.show_palettes = false;
                 app.ui.show_toolbar = true;
             } else {
                 app.ui.show_toolsets = true;
+                app.ui.show_palettes = true;
             }
             Ok(Value::Null)
         }

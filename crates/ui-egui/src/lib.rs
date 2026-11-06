@@ -3,8 +3,8 @@
 //! A thin shell over [`cadcraft_engine::Session`]: panels read engine state and act through
 //! commands (`app.run(id, params)`) or the command line (`app.cmdline(text)`). Nothing here owns
 //! drawing data. The layout follows the familiar CAD desktop: title and tool bar, file tabs,
-//! Tool Sets on the left, the drawing area with its command line, Layers and Properties on the
-//! right, layout tabs and drafting toggles in the status bar.
+//! a drafting ribbon with Layers and Properties at the top, the drawing area and its command
+//! line below, and layout tabs plus drafting toggles in the status bar. Classic palettes remain optional.
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 #![forbid(unsafe_code)]
 
@@ -191,7 +191,7 @@ impl Default for UiState {
 
             interface_language: i18n::Preference::default(),
             show_toolsets: false,
-            show_palettes: true,
+            show_palettes: false,
             show_toolbar: true,
             autocad_ribbon: true,
             ribbon_tab: "home".into(),

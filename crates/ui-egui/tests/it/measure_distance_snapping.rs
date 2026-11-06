@@ -7,7 +7,7 @@ use cadcraft_engine::snap::mode;
 use cadcraft_ui_egui::{CadApp, Services};
 use egui::{Event, Modifiers, PointerButton, Pos2, vec2};
 use egui_kittest::Harness;
-use egui_kittest::kittest::Queryable;
+use egui_kittest::kittest::{NodeT, Queryable};
 use serde_json::json;
 
 fn harness(paper: bool, render: bool) -> Harness<'static, CadApp> {
@@ -44,6 +44,9 @@ fn harness(paper: bool, render: bool) -> Harness<'static, CadApp> {
     session.settings.snapmode = true;
     session.settings.orthomode = true;
     let mut app = CadApp::new(session, Services::default());
+    // The Home ribbon scrolls horizontally; Utilities is past the initial
+    // viewport. Manage places Measure Distance in the visible first group.
+    app.ui.ribbon_tab = "manage".into();
     app.canvas.zoom_pending = false;
     let builder = Harness::builder().with_size(vec2(1600.0, 1000.0));
     let builder = if render { builder.wgpu() } else { builder };
@@ -76,7 +79,12 @@ fn measure(paper: bool) {
     let shots = std::env::var_os("CADCRAFT_MEASURE_SHOTS").map(std::path::PathBuf::from);
     let mut h = harness(paper, shots.is_some());
     let dirty_before = h.state().session.state().unwrap().is_dirty();
-    h.get_by_role_and_label(egui::accesskit::Role::Button, "Measure Distance").click();
+    // Both the toolbar and the drafting ribbon expose this command. Either
+    // visible button should start the same distance measurement workflow.
+    h.get_all_by_role(egui::accesskit::Role::Button)
+        .find(|node| node.accesskit_node().label().as_deref() == Some("Measure Distance"))
+        .expect("a Measure Distance button")
+        .click();
     h.run_steps(3);
     assert_eq!(h.state().session.running.as_ref().unwrap().id, "dist");
     let (endpoint, intersection) = if paper { (Vec2::new(3.5, 4.0), Vec2::new(5.0, 4.0)) } else { (Vec2::ZERO, Vec2::new(10.0, 0.0)) };

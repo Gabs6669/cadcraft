@@ -49,6 +49,7 @@
 	Angle	Ângulo
 	Angular	Angular
 	Annotation Visibility	Visibilidade de anotações
+	Annotation	Anotação
 	Annotation scale	Escala de anotação
 	Annotative Object Scale	Escala do objeto anotativo
 	Annotative Update	Atualização anotativa
@@ -707,6 +708,7 @@
 	Screen magnifiers, screen readers and recorders follow the system cursor.	Ampliadores de tela, leitores de tela e gravadores acompanham o cursor do sistema.
 	Select Similar	Selecionar semelhantes
 	Select objects first, then choose a command	Selecione os objetos primeiro e depois escolha um comando
+	Select objects to match to the current layer	Selecione os objetos para igualar à camada atual
 	Selection	Seleção
 	Send Hatches to Back	Enviar hachuras para trás
 	Send Under Objects	Enviar sob os objetos
@@ -1154,6 +1156,7 @@
 	User	Usuário
 	User Parameters	Parâmetros do usuário
 	User Preferences	Preferências do usuário
+	Utilities	Utilitários
 	Username	Nome de usuário
 	VP Color	Cor do VP
 	VP Freeze	Congelar no VP

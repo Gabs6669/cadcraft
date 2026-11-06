@@ -151,7 +151,7 @@ fn toggle_restores_floating_or_docked_location_without_hiding_other_panels() {
         let layout = app.ui.docking.layout.clone();
         app.run("ui.toggle.quickcalc", json!({})).unwrap();
         assert!(!app.ui.docking.layout.contains(&Panel::QuickCalc));
-        for panel in [Panel::Canvas, Panel::Properties, Panel::ToolSets] {
+        for panel in [Panel::Canvas, Panel::ToolSets] {
             assert!(app.ui.docking.layout.contains(&panel));
         }
         assert!(!app.ui.docking.layout.contains(&Panel::Layers), "ribbon keeps Layers out of the side palette by default");

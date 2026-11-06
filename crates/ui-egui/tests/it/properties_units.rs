@@ -13,6 +13,9 @@ use serde_json::json;
 /// A selected TEXT 2.5 high, with lengths in `lunits`.
 fn palettes(lunits: i64) -> Harness<'static, CadApp> {
     let mut app = CadApp::new(Session::default(), Services::default());
+    // The Properties palette is optional with the top ribbon enabled; open it
+    // explicitly when testing its numeric editors.
+    app.ui.show_palettes = true;
     app.run("setvar", json!({ "name": "LUNITS", "value": lunits })).unwrap();
     let h = app.run("text", json!({ "at": [0, 0], "text": "Note", "height": 2.5 })).unwrap();
     app.run("select", json!({ "handles": [h["handle"]] })).unwrap();

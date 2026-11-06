@@ -109,13 +109,13 @@ pub fn default_workspace() -> Workspace {
     })
 }
 
-/// Drafting-ribbon workspace: layer selection lives in the ribbon, leaving the
-/// Properties palette on the right. Keep the old location in `hidden` so the
-/// Layers palette can still be reopened through Window or the layer manager.
+/// Drafting-ribbon workspace: layers and common object properties live in the
+/// ribbon. Side palettes retain their docking locations and can be reopened.
 pub fn ribbon_workspace() -> Workspace {
     let mut workspace = default_workspace();
     if workspace.set_visible(Panel::ToolSets, false, None, permissions).is_err()
         || workspace.set_visible(Panel::Layers, false, None, permissions).is_err()
+        || workspace.set_visible(Panel::Properties, false, None, permissions).is_err()
     {
         return default_workspace();
     }
@@ -294,9 +294,12 @@ fn sync(workspace: &mut Workspace, app: &crate::CadApp) -> Result<(), String> {
         set_visible(workspace, Panel::Layers, false)?;
         set_visible(workspace, Panel::Properties, false)?;
     } else if !workspace.layout.contains(&Panel::Layers) && !workspace.layout.contains(&Panel::Properties) {
-        // Reopen the palette that closed last before the one recorded beside it.
+        // The ribbon already contains Layers: reopening palettes in that mode
+        // must not unexpectedly put the Layers palette on the right again.
         set_visible(workspace, Panel::Properties, true)?;
-        set_visible(workspace, Panel::Layers, true)?;
+        if !app.ui.autocad_ribbon {
+            set_visible(workspace, Panel::Layers, true)?;
+        }
     }
     Ok(())
 }
