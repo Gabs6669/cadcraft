@@ -245,14 +245,7 @@ fn layer_controls(app: &mut CadApp, ui: &mut egui::Ui, clicked: &mut Option<&'st
                         if icons::button(ui, if *on { Icon::Bulb } else { Icon::BulbOff }, 18.0, crate::i18n::t("On/Off"), false).clicked() {
                             next_state = Some((name.clone(), "on", !*on));
                         }
-                        if icons::button(
-                            ui,
-                            if *frozen { Icon::Snowflake } else { Icon::Sun },
-                            18.0,
-                            crate::i18n::t("Freeze/Thaw"),
-                            false,
-                        )
-                        .clicked()
+                        if icons::button(ui, if *frozen { Icon::Snowflake } else { Icon::Sun }, 18.0, crate::i18n::t("Freeze/Thaw"), false).clicked()
                         {
                             next_state = Some((name.clone(), "frozen", !*frozen));
                         }
@@ -318,10 +311,9 @@ pub fn show(app: &mut CadApp, ui: &mut egui::Ui) {
                             if selected == "home" && group.label == "Layers" {
                                 layer_controls(app, ui, &mut clicked);
                             } else {
-                                egui::Grid::new(("cc_ribbon_group", selected.as_str(), group.label))
-                                    .num_columns(4)
-                                    .spacing(vec2(1.0, 2.0))
-                                    .show(ui, |ui| {
+                                egui::Grid::new(("cc_ribbon_group", selected.as_str(), group.label)).num_columns(4).spacing(vec2(1.0, 2.0)).show(
+                                    ui,
+                                    |ui| {
                                         for (i, (icon, command, label)) in group.tools.iter().enumerate() {
                                             if tool_button(ui, *icon, command, label) {
                                                 clicked = Some(*command);
@@ -330,7 +322,8 @@ pub fn show(app: &mut CadApp, ui: &mut egui::Ui) {
                                                 ui.end_row();
                                             }
                                         }
-                                    });
+                                    },
+                                );
                                 ui.add_space(2.0);
                                 ui.label(egui::RichText::new(crate::i18n::t(group.label)).size(10.5).color(t.text_dim));
                             }
@@ -352,8 +345,8 @@ mod tests {
 
     #[test]
     fn drafting_workspace_keeps_layers_in_the_ribbon_and_properties_on_the_side() {
-        use crate::docking::Panel;
         use crate::Services;
+        use crate::docking::Panel;
         use cadcraft_engine::Session;
 
         let mut app = CadApp::new(Session::default(), Services::default());
