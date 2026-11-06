@@ -15,6 +15,9 @@ use serde_json::json;
 fn harness() -> Harness<'static, CadApp> {
     let mut app = CadApp::new(Session::new(), Services::default());
     app.ui.in_window_menu = true;
+    // These tests exercise the classic menu and docked-palette layout, not the optional ribbon.
+    // With the ribbon enabled, its "View" tab duplicates the menu title and the palette moves.
+    app.ui.autocad_ribbon = false;
     let mut harness = Harness::builder().with_size(vec2(1280.0, 760.0)).build_ui_state(
         |ui, app: &mut CadApp| {
             app.logic(&ui.ctx().clone());
