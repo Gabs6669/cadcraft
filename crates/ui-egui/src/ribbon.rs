@@ -13,6 +13,11 @@ use crate::theme::Tokens;
 
 type Tool = (Icon, &'static str, &'static str);
 
+// Reserve an actual footer row for group captions. Previously the command
+// buttons occupied the whole ribbon and the captions were clipped away.
+const GROUP_BODY_HEIGHT: f32 = 82.0;
+const GROUP_CAPTION_HEIGHT: f32 = 18.0;
+
 struct Group {
     label: &'static str,
     tools: &'static [Tool],
@@ -217,13 +222,23 @@ fn tool_button(ui: &mut egui::Ui, (icon, command, label): Tool, prominent: bool,
     icons::paint(ui.painter(), Rect::from_center_size(center, vec2(icon_size, icon_size)), icon, !known);
     let name = crate::i18n::t(label);
     let display = if prominent {
-        if let Some((first, rest)) = name.split_once(' ').filter(|_| name.chars().count() > 11) {
-            format!("{}\n{}", short_label(first, 11), short_label(rest, 11))
+        let limit = if size.x >= 98.0 { 16 } else { 12 };
+        if let Some((first, rest)) = name.split_once(' ').filter(|_| name.chars().count() > limit) {
+            format!("{}\n{}", short_label(first, limit), short_label(rest, limit))
         } else {
-            short_label(name, 11)
+            short_label(name, limit)
         }
     } else {
-        short_label(name, if size.x >= 100.0 { 14 } else { 10 })
+        short_label(
+            name,
+            if size.x >= 108.0 {
+                18
+            } else if size.x >= 90.0 {
+                14
+            } else {
+                11
+            },
+        )
     };
     let (text_pos, alignment, font_size) = if prominent {
         (pos2(rect.center().x, rect.bottom() - 16.0), Align2::CENTER_CENTER, 11.0)
@@ -243,7 +258,7 @@ fn command_group(ui: &mut egui::Ui, tab: &str, group: &Group, clicked: &mut Opti
     let secondary = &group.tools[1..];
     let dense = secondary.len() > 3;
     let columns = if dense { 2 } else { 1 };
-    let secondary_size = if dense { vec2(83.0, 20.0) } else { vec2(108.0, 26.5) };
+    let secondary_size = if dense { vec2(92.0, 20.0) } else { vec2(116.0, 26.5) };
     ui.horizontal(|ui| {
         ui.spacing_mut().item_spacing.x = 3.0;
         if tool_button(ui, primary, true, vec2(68.0, 82.0)) {
@@ -280,9 +295,9 @@ fn layer_controls(app: &mut CadApp, ui: &mut egui::Ui, clicked: &mut Option<&'st
     let mut next_state: Option<(String, &'static str, bool)> = None;
     let mut match_clicked = false;
 
-    ui.set_min_width(320.0);
+    ui.set_min_width(352.0);
     ui.horizontal(|ui| {
-        if tool_button(ui, (Icon::LayerProps, "ui.dialog.layers", "Layer Properties"), true, vec2(68.0, 82.0)) {
+        if tool_button(ui, (Icon::LayerProps, "ui.dialog.layers", "Layer Properties"), true, vec2(104.0, GROUP_BODY_HEIGHT)) {
             *clicked = Some("ui.dialog.layers");
         }
         ui.vertical(|ui| {
@@ -290,7 +305,7 @@ fn layer_controls(app: &mut CadApp, ui: &mut egui::Ui, clicked: &mut Option<&'st
             ui.horizontal(|ui| {
                 ui.spacing_mut().item_spacing.x = 3.0;
                 let rgb = current_color.resolve(Color::Index(7), Color::Index(7));
-                let (swatch, _) = ui.allocate_exact_size(vec2(17.0, 17.0), Sense::hover());
+                let (swatch, _) = ui.allocate_exact_size(vec2(19.0, 19.0), Sense::hover());
                 ui.painter().rect_filled(swatch, 1.0, egui::Color32::from_rgb(rgb.0, rgb.1, rgb.2));
                 ui.painter().rect_stroke(swatch, 1.0, Stroke::new(1.0, Tokens::get().border), egui::StrokeKind::Inside);
                 craft_ui::ComboBox::from_id_salt("ribbon-current-layer")
@@ -301,7 +316,7 @@ fn layer_controls(app: &mut CadApp, ui: &mut egui::Ui, clicked: &mut Option<&'st
                             for (name, on, frozen, locked, color) in &layers {
                                 ui.horizontal(|ui| {
                                     ui.spacing_mut().item_spacing.x = 3.0;
-                                    if icons::button(ui, if *on { Icon::Bulb } else { Icon::BulbOff }, 18.0, crate::i18n::t("On/Off"), false)
+                                    if icons::button(ui, if *on { Icon::Bulb } else { Icon::BulbOff }, 20.0, crate::i18n::t("On/Off"), false)
                                         .clicked()
                                     {
                                         next_state = Some((name.clone(), "on", !*on));
@@ -309,7 +324,7 @@ fn layer_controls(app: &mut CadApp, ui: &mut egui::Ui, clicked: &mut Option<&'st
                                     if icons::button(
                                         ui,
                                         if *frozen { Icon::Snowflake } else { Icon::Sun },
-                                        18.0,
+                                        20.0,
                                         crate::i18n::t("Freeze/Thaw"),
                                         false,
                                     )
@@ -317,7 +332,7 @@ fn layer_controls(app: &mut CadApp, ui: &mut egui::Ui, clicked: &mut Option<&'st
                                     {
                                         next_state = Some((name.clone(), "frozen", !*frozen));
                                     }
-                                    if icons::button(ui, if *locked { Icon::Lock } else { Icon::Unlock }, 18.0, crate::i18n::t("Lock/Unlock"), false)
+                                    if icons::button(ui, if *locked { Icon::Lock } else { Icon::Unlock }, 20.0, crate::i18n::t("Lock/Unlock"), false)
                                         .clicked()
                                     {
                                         next_state = Some((name.clone(), "locked", !*locked));
@@ -342,7 +357,7 @@ fn layer_controls(app: &mut CadApp, ui: &mut egui::Ui, clicked: &mut Option<&'st
                     (Icon::LayerIso, "layiso", "Isolate Layer"),
                     (Icon::LayerFreeze, "layfrz", "Freeze Layer"),
                 ] {
-                    if icons::button(ui, icon, 20.0, crate::i18n::t(label), false).clicked() {
+                    if icons::button(ui, icon, 23.0, crate::i18n::t(label), false).clicked() {
                         *clicked = Some(command);
                     }
                 }
@@ -352,7 +367,7 @@ fn layer_controls(app: &mut CadApp, ui: &mut egui::Ui, clicked: &mut Option<&'st
             });
             ui.horizontal(|ui| {
                 ui.spacing_mut().item_spacing.x = 3.0;
-                let icon_clicked = icons::button(ui, Icon::LayerMatch, 20.0, crate::i18n::t("Match Layer"), false).clicked();
+                let icon_clicked = icons::button(ui, Icon::LayerMatch, 23.0, crate::i18n::t("Match Layer"), false).clicked();
                 let label_clicked = ui.small_button(crate::i18n::t("Match Layer")).clicked();
                 if icon_clicked || label_clicked {
                     match_clicked = true;
@@ -360,7 +375,6 @@ fn layer_controls(app: &mut CadApp, ui: &mut egui::Ui, clicked: &mut Option<&'st
             });
         });
     });
-    ui.label(egui::RichText::new(crate::i18n::t("Layers")).size(10.5).color(Tokens::get().text_dim));
     if match_clicked {
         if selected_ids.is_empty() {
             app.set_status(crate::i18n::t("Select objects to match to the current layer"));
@@ -389,9 +403,10 @@ fn layer_controls(app: &mut CadApp, ui: &mut egui::Ui, clicked: &mut Option<&'st
 /// pattern elements are drawn, negative elements are gaps, and zeros are dots.
 /// This uses the document's own linetype pattern rather than a decorative icon.
 fn line_sample(ui: &mut egui::Ui, pattern: &[f64], stroke_width: f32, width: f32) {
-    let (rect, _) = ui.allocate_exact_size(vec2(width, 20.0), Sense::hover());
+    let (rect, _) = ui.allocate_exact_size(vec2(width, 21.0), Sense::hover());
     let t = Tokens::get();
     ui.painter().rect_filled(rect, 2.0, t.field);
+    ui.painter().rect_stroke(rect, 2.0, Stroke::new(1.0, t.border), egui::StrokeKind::Inside);
     let left = rect.left() + 3.0;
     let right = rect.right() - 3.0;
     let y = rect.center().y;
@@ -424,7 +439,7 @@ fn weight_sample_width(label: &str) -> f32 {
     label
         .strip_suffix(" mm")
         .and_then(|millimetres| millimetres.parse::<f32>().ok())
-        .map_or(1.2, |millimetres| (0.8 + millimetres * 2.2).clamp(0.8, 3.5))
+        .map_or(1.6, |millimetres| (1.2 + millimetres * 2.3).clamp(1.3, 4.2))
 }
 
 /// AutoCAD-style three-row property controls. With no selection these edit the
@@ -487,7 +502,7 @@ fn property_controls(app: &mut CadApp, ui: &mut egui::Ui) {
         });
         ui.horizontal(|ui| {
             ui.spacing_mut().item_spacing.x = 3.0;
-            line_sample(ui, selected_pattern, 1.25, 34.0);
+            line_sample(ui, selected_pattern, 1.85, 44.0);
             craft_ui::ComboBox::from_id_salt("ribbon-object-linetype")
                 .width(181.0)
                 .selected_text(crate::i18n::t(&linetype_label))
@@ -502,7 +517,7 @@ fn property_controls(app: &mut CadApp, ui: &mut egui::Ui) {
                             types.iter().find(|(name, _)| name == &choice).map_or(&[][..], |(_, pattern)| pattern.as_slice())
                         };
                         ui.horizontal(|ui| {
-                            line_sample(ui, pattern, 1.25, 34.0);
+                            line_sample(ui, pattern, 1.85, 48.0);
                             if ui.selectable_label(choice == linetype_label, crate::i18n::t(&choice)).clicked() {
                                 edit = Some(("linetype", json!(choice)));
                                 ui.close();
@@ -515,7 +530,7 @@ fn property_controls(app: &mut CadApp, ui: &mut egui::Ui) {
         });
         ui.horizontal(|ui| {
             ui.spacing_mut().item_spacing.x = 3.0;
-            line_sample(ui, &[], weight_sample_width(effective_weight), 34.0);
+            line_sample(ui, &[], weight_sample_width(effective_weight), 44.0);
             craft_ui::ComboBox::from_id_salt("ribbon-object-lineweight")
                 .width(181.0)
                 .selected_text(crate::i18n::t(&weight_label))
@@ -523,7 +538,7 @@ fn property_controls(app: &mut CadApp, ui: &mut egui::Ui) {
                     egui::ScrollArea::vertical().max_height(280.0).show(ui, |ui| {
                         for choice in ["ByLayer", "ByBlock", "Default"] {
                             ui.horizontal(|ui| {
-                                line_sample(ui, &[], if choice == "ByLayer" { weight_sample_width(&layer_weight) } else { 1.2 }, 34.0);
+                                line_sample(ui, &[], if choice == "ByLayer" { weight_sample_width(&layer_weight) } else { 1.6 }, 48.0);
                                 if ui.selectable_label(weight_label == choice, crate::i18n::t(choice)).clicked() {
                                     edit = Some(("lineweight", json!(choice)));
                                     ui.close();
@@ -533,7 +548,7 @@ fn property_controls(app: &mut CadApp, ui: &mut egui::Ui) {
                         for standard in cadcraft_doc::Lineweight::STANDARD {
                             let label = format!("{:.2} mm", f64::from(standard) / 100.0);
                             ui.horizontal(|ui| {
-                                line_sample(ui, &[], weight_sample_width(&label), 34.0);
+                                line_sample(ui, &[], weight_sample_width(&label), 48.0);
                                 if ui.selectable_label(weight_label == label, &label).clicked() {
                                     edit = Some(("lineweight", json!(f64::from(standard) / 100.0)));
                                     ui.close();
@@ -546,9 +561,6 @@ fn property_controls(app: &mut CadApp, ui: &mut egui::Ui) {
                 .accessible_name(crate::i18n::t("Lineweight"));
         });
     });
-    // Align the group caption with the large command icons in neighbouring groups.
-    ui.add_space(16.0);
-    ui.label(egui::RichText::new(crate::i18n::t("Properties")).size(10.5).color(Tokens::get().text_dim));
 
     if let Some((field, value)) = edit {
         let (command, params) = if ids.is_empty() {
@@ -579,7 +591,7 @@ pub fn show(app: &mut CadApp, ui: &mut egui::Ui) {
     let portuguese = app.language().starts_with("pt");
     let mut clicked = None;
     egui::Panel::top("cc_drafting_ribbon")
-        .exact_size(133.0)
+        .exact_size(158.0)
         .frame(egui::Frame::NONE.fill(t.chrome).inner_margin(egui::Margin::symmetric(7, 3)))
         .show(ui, |ui| {
             ui.horizontal(|ui| {
@@ -597,16 +609,24 @@ pub fn show(app: &mut CadApp, ui: &mut egui::Ui) {
                     ui.spacing_mut().item_spacing.x = 6.0;
                     for group in groups(&selected) {
                         ui.vertical(|ui| {
-                            ui.set_min_height(94.0);
+                            ui.set_min_height(GROUP_BODY_HEIGHT + GROUP_CAPTION_HEIGHT);
+                            let body_top = ui.cursor().top();
                             if selected == "home" && group.label == "Layers" {
                                 layer_controls(app, ui, &mut clicked);
                             } else if selected == "home" && group.label == "Properties" {
                                 property_controls(app, ui);
                             } else {
                                 command_group(ui, &selected, group, &mut clicked);
-                                ui.add_space(1.0);
-                                ui.label(egui::RichText::new(crate::i18n::t(group.label)).size(10.5).color(t.text_dim));
                             }
+                            let body_used = ui.cursor().top() - body_top;
+                            ui.add_space((GROUP_BODY_HEIGHT - body_used).max(0.0));
+                            ui.allocate_ui_with_layout(
+                                vec2(ui.min_rect().width(), GROUP_CAPTION_HEIGHT),
+                                egui::Layout::top_down(egui::Align::Center),
+                                |ui| {
+                                    ui.label(egui::RichText::new(crate::i18n::t(group.label)).size(10.5).color(t.text_dim));
+                                },
+                            );
                         });
                         ui.separator();
                     }
@@ -699,8 +719,8 @@ mod tests {
     fn lineweight_samples_reflect_the_selected_thickness() {
         assert!(weight_sample_width("0.05 mm") < weight_sample_width("0.50 mm"));
         assert!(weight_sample_width("0.50 mm") < weight_sample_width("2.11 mm"));
-        assert_eq!(weight_sample_width("ByLayer"), 1.2);
-        assert_eq!(weight_sample_width("2.11 mm"), 3.5);
+        assert_eq!(weight_sample_width("ByLayer"), 1.6);
+        assert_eq!(weight_sample_width("2.11 mm"), 4.2);
     }
 
     #[test]
