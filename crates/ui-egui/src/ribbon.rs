@@ -98,21 +98,40 @@ const HOME: &[Group] = &[
 const INSERT: &[Group] = &[
     Group {
         label: "Block",
+        tools: &[(Icon::Insert, "insert", "Insert Block"), (Icon::BlockCreate, "block", "Create Block"), (Icon::BlockEdit, "bedit", "Block Editor")],
+    },
+    Group {
+        label: "Attributes",
         tools: &[
-            (Icon::Insert, "insert", "Insert Block"),
-            (Icon::BlockCreate, "block", "Create Block"),
-            (Icon::BlockEdit, "bedit", "Block Editor"),
             (Icon::AttDef, "attdef", "Define Attributes"),
+            (Icon::BlockEdit, "attedit", "Edit Attributes..."),
+            (Icon::Blocks, "battman", "Block Attribute Manager..."),
+            (Icon::AttDef, "attsync", "Synchronize Attributes"),
         ],
     },
-    Group { label: "Reference", tools: &[(Icon::Attach, "attach", "Attach"), (Icon::Import, "import", "Import")] },
-    Group { label: "Table", tools: &[(Icon::Table, "table", "Table")] },
+    Group {
+        label: "Reference",
+        tools: &[(Icon::Attach, "xref", "Reference Manager"), (Icon::Attach, "xattach", "DWG Reference..."), (Icon::Import, "import", "Import")],
+    },
+    Group {
+        label: "Data",
+        tools: &[
+            (Icon::Table, "table", "Table"),
+            (Icon::Table, "tablestyle", "Table Style..."),
+            (Icon::Import, "dataextraction", "Data Extraction..."),
+        ],
+    },
 ];
 
 const ANNOTATE: &[Group] = &[
     Group {
         label: "Text",
-        tools: &[(Icon::Text, "text", "Single Line Text"), (Icon::MText, "mtext", "Multiline Text"), (Icon::TextStyle, "style", "Text Style")],
+        tools: &[
+            (Icon::Text, "text", "Single Line Text"),
+            (Icon::MText, "mtext", "Multiline Text"),
+            (Icon::TextStyle, "style", "Text Style"),
+            (Icon::MText, "txt2mtxt", "Convert Text to Mtext"),
+        ],
     },
     Group {
         label: "Dimension",
@@ -127,23 +146,63 @@ const ANNOTATE: &[Group] = &[
             (Icon::DimStyle, "dimstyle", "Dimension Style"),
         ],
     },
-    Group { label: "Leader", tools: &[(Icon::MLeader, "mleader", "Multileader"), (Icon::AddLeader, "mleaderedit", "Add Leader")] },
-    Group { label: "Table", tools: &[(Icon::Table, "table", "Table")] },
+    Group {
+        label: "Leader",
+        tools: &[
+            (Icon::MLeader, "mleader", "Multileader"),
+            (Icon::AddLeader, "mleaderedit.add", "Add Leader"),
+            (Icon::RemoveLeader, "mleaderedit.remove", "Remove Leader"),
+            (Icon::AlignLeaders, "mleaderalign", "Align Multileaders"),
+        ],
+    },
+    Group { label: "Table", tools: &[(Icon::Table, "table", "Table"), (Icon::Table, "tablestyle", "Table Style...")] },
 ];
 
-const PARAMETRIC: &[Group] = &[Group {
-    label: "Parametric",
-    tools: &[
-        (Icon::Constraint, "autoconstrain", "Auto Constrain"),
-        (Icon::Coincident, "gccoincident", "Coincident"),
-        (Icon::Parallel, "gcparallel", "Parallel"),
-        (Icon::Perpendicular, "gcperpendicular", "Perpendicular"),
-        (Icon::Horizontal, "gchorizontal", "Horizontal"),
-        (Icon::Vertical, "gcvertical", "Vertical"),
-        (Icon::DelConstraint, "delconstraint", "Delete Constraints"),
-        (Icon::Parameters, "parameters", "Parameters Manager"),
-    ],
-}];
+const PARAMETRIC: &[Group] = &[
+    Group {
+        label: "Geometric Constraints",
+        tools: &[
+            (Icon::Constraint, "autoconstrain", "Auto Constrain"),
+            (Icon::Coincident, "gccoincident", "Coincident"),
+            (Icon::Parallel, "gcparallel", "Parallel"),
+            (Icon::Perpendicular, "gcperpendicular", "Perpendicular"),
+            (Icon::Horizontal, "gchorizontal", "Horizontal"),
+            (Icon::Vertical, "gcvertical", "Vertical"),
+            (Icon::Tangent, "gctangent", "Tangent"),
+            (Icon::Concentric, "gcconcentric", "Concentric"),
+        ],
+    },
+    Group {
+        label: "Dimensional Constraints",
+        tools: &[
+            (Icon::DimLinear, "dclinear", "Linear"),
+            (Icon::DimAligned, "dcaligned", "Aligned"),
+            (Icon::DimAngular, "dcangular", "Angular"),
+            (Icon::DimRadius, "dcradius", "Radius"),
+            (Icon::DimDiameter, "dcdiameter", "Diameter"),
+            (Icon::Horizontal, "dchorizontal", "Horizontal"),
+            (Icon::Vertical, "dcvertical", "Vertical"),
+        ],
+    },
+    Group {
+        label: "Manage",
+        tools: &[
+            (Icon::Parameters, "parameters", "Parameters Manager"),
+            (Icon::DelConstraint, "delconstraint", "Delete Constraints"),
+            (Icon::Gear, "constraintsettings", "Constraint Settings"),
+            (Icon::Constraint, "constraintinfer", "Infer Constraints"),
+        ],
+    },
+    Group {
+        label: "Display",
+        tools: &[
+            (Icon::Constraint, "constraintbar.showall", "Show All Constraint Bars"),
+            (Icon::DelConstraint, "constraintbar.hideall", "Hide All Constraint Bars"),
+            (Icon::Annotation, "dcdisplay.showall", "Show All Dynamic Dimensions"),
+            (Icon::DimLinear, "dcdisplay.hideall", "Hide All Dynamic Dimensions"),
+        ],
+    },
+];
 
 const VIEW: &[Group] = &[
     Group {
@@ -152,12 +211,30 @@ const VIEW: &[Group] = &[
             (Icon::ZoomExtents, "zoom.extents", "Zoom Extents"),
             (Icon::ZoomWindow, "zoom.window", "Zoom Window"),
             (Icon::Pan, "pan", "Pan"),
-            (Icon::Orbit, "3dorbit", "Orbit"),
+            (Icon::ZoomOut, "zoom.previous", "Zoom Previous"),
+        ],
+    },
+    Group {
+        label: "Views",
+        tools: &[(Icon::Workspace, "view", "Named Views..."), (Icon::ZoomIn, "zoom.in", "Zoom In"), (Icon::ZoomOut, "zoom.out", "Zoom Out")],
+    },
+    Group { label: "Viewports", tools: &[(Icon::Workspace, "vports", "New Viewports..."), (Icon::Grid, "mview", "Viewports")] },
+    Group {
+        label: "Display",
+        tools: &[
+            (Icon::Workspace, "ui.toggle.viewcube", "ViewCube"),
+            (Icon::Ortho, "ui.toggle.ucsicon", "UCS Icon"),
+            (Icon::ZoomFit, "regen", "Regen"),
+            (Icon::ZoomExtents, "regenall", "Regen All"),
         ],
     },
     Group {
         label: "Palettes",
-        tools: &[(Icon::Layers, "ui.panel.layers", "Layers Palette"), (Icon::Properties, "ui.panel.properties", "Properties Inspector")],
+        tools: &[
+            (Icon::Layers, "ui.panel.layers", "Layers Palette"),
+            (Icon::Properties, "ui.panel.properties", "Properties Inspector"),
+            (Icon::Blocks, "ui.dialog.blocks", "Blocks"),
+        ],
     },
 ];
 
@@ -165,6 +242,24 @@ const MANAGE: &[Group] = &[
     Group { label: "Utilities", tools: &[(Icon::Measure, "dist", "Measure Distance"), (Icon::Area, "area", "Area"), (Icon::List, "list", "List")] },
     Group {
         label: "Drawing",
+        tools: &[
+            (Icon::Blocks, "audit", "Audit"),
+            (Icon::Erase, "purge", "Purge"),
+            (Icon::Open, "recover", "Recover..."),
+            (Icon::Measure, "units", "Units..."),
+        ],
+    },
+    Group {
+        label: "Settings",
+        tools: &[
+            (Icon::Gear, "options", "Options..."),
+            (Icon::Osnap, "dsettings", "Drafting Settings..."),
+            (Icon::Workspace, "ui.dock.reset", "Reset Panel Layout"),
+            (Icon::Annotation, "ui.dialog.language", "Interface Language"),
+        ],
+    },
+    Group {
+        label: "Content",
         tools: &[(Icon::Layers, "ui.dialog.layers", "Layer Properties Manager"), (Icon::Blocks, "ui.dialog.blocks", "Blocks")],
     },
 ];
@@ -179,15 +274,28 @@ const OUTPUT: &[Group] = &[
             (Icon::Publish, "publish", "Batch Publish"),
         ],
     },
-    Group { label: "Export", tools: &[(Icon::Export, "export", "Export")] },
+    Group { label: "Export", tools: &[(Icon::Export, "export", "Export"), (Icon::Plot, "exportpdf", "Export to PDF...")] },
+    Group { label: "Styles", tools: &[(Icon::PageSetup, "stylesmanager", "Plot Style Manager..."), (Icon::PageSetup, "plotstyle", "Plot Style...")] },
 ];
 
 const THREE_D: &[Group] = &[
     Group {
         label: "Navigate",
-        tools: &[(Icon::Orbit, "3dorbit", "Orbit"), (Icon::Pan, "pan", "Pan"), (Icon::ZoomExtents, "zoom.extents", "Zoom Extents")],
+        tools: &[
+            (Icon::Pan, "pan", "Pan"),
+            (Icon::ZoomExtents, "zoom.extents", "Zoom Extents"),
+            (Icon::ZoomWindow, "zoom.window", "Zoom Window"),
+            (Icon::ZoomOut, "zoom.previous", "Zoom Previous"),
+        ],
     },
-    Group { label: "View", tools: &[(Icon::Workspace, "ui.toggle.viewcube", "ViewCube")] },
+    Group {
+        label: "View",
+        tools: &[
+            (Icon::Workspace, "ui.toggle.viewcube", "ViewCube"),
+            (Icon::Ortho, "ui.toggle.ucsicon", "UCS Icon"),
+            (Icon::Workspace, "view", "Named Views..."),
+        ],
+    },
 ];
 
 fn groups(tab: &str) -> &'static [Group] {
@@ -203,8 +311,36 @@ fn groups(tab: &str) -> &'static [Group] {
     }
 }
 
-fn short_label(name: &str, limit: usize) -> String {
-    if name.chars().count() > limit { format!("{}…", name.chars().take(limit - 1).collect::<String>()) } else { name.to_string() }
+/// Fit the actual localized label in the button, preserving whole words when a
+/// second line is available. Ellipses are a last resort, never a fixed-length
+/// shortcut: "Concordância" should not be shortened just for being long.
+fn fitted_button_label(name: &str, allow_two_lines: bool, fits: impl Fn(&str) -> bool) -> String {
+    if fits(name) {
+        return name.to_owned();
+    }
+    if allow_two_lines {
+        let mut best: Option<(usize, String)> = None;
+        for (split_at, _) in name.match_indices(' ') {
+            let (first, second) = name.split_at(split_at);
+            let second = second.trim_start();
+            if !first.is_empty() && !second.is_empty() && fits(first) && fits(second) {
+                let score = first.chars().count().abs_diff(second.chars().count());
+                // When both arrangements are equally balanced, prefer the
+                // later split so phrases like "Linha de chamada" stay together.
+                if !matches!(&best, Some((old_score, _)) if score > *old_score) {
+                    best = Some((score, format!("{first}\n{second}")));
+                }
+            }
+        }
+        if let Some((_, lines)) = best {
+            return lines;
+        }
+    }
+    let mut shortened = name.to_owned();
+    while !shortened.is_empty() && !fits(&format!("{shortened}…")) {
+        shortened.pop();
+    }
+    format!("{shortened}…")
 }
 
 /// The large primary action and compact secondary actions share command and
@@ -217,35 +353,39 @@ fn tool_button(ui: &mut egui::Ui, (icon, command, label): Tool, prominent: bool,
         ui.painter().rect_filled(rect, 3.0, t.control_hover);
     }
     let tint = if known { t.text } else { t.text_dim.gamma_multiply(0.55) };
-    let icon_size = if prominent { 32.0 } else { 16.0 };
+    let icon_size = if prominent { 32.0 } else { 17.0 };
     let center = if prominent { pos2(rect.center().x, rect.top() + 29.0) } else { pos2(rect.left() + 11.0, rect.center().y) };
     icons::paint(ui.painter(), Rect::from_center_size(center, vec2(icon_size, icon_size)), icon, !known);
     let name = crate::i18n::t(label);
-    let display = if prominent {
-        let limit = if size.x >= 98.0 { 16 } else { 12 };
-        if let Some((first, rest)) = name.split_once(' ').filter(|_| name.chars().count() > limit) {
-            format!("{}\n{}", short_label(first, limit), short_label(rest, limit))
-        } else {
-            short_label(name, limit)
+    // Main actions have short ribbon captions, while their tooltips and
+    // accessible names retain the complete command description.
+    let visible_name = if prominent {
+        match label {
+            "Layer Properties Manager" => crate::i18n::t("Layer Properties"),
+            "Layers Palette" => crate::i18n::t("Layers"),
+            "Multileader" => crate::i18n::t("Leader"),
+            "Parameters Manager" => crate::i18n::t("Parameters"),
+            "Plot Style Manager..." => crate::i18n::t("Styles"),
+            "Properties Inspector" => crate::i18n::t("Properties"),
+            "Reference Manager" => crate::i18n::t("Reference"),
+            "Single Line Text" => crate::i18n::t("Text"),
+            _ => name,
         }
     } else {
-        short_label(
-            name,
-            if size.x >= 108.0 {
-                18
-            } else if size.x >= 90.0 {
-                14
-            } else {
-                11
-            },
-        )
+        name
     };
-    let (text_pos, alignment, font_size) = if prominent {
-        (pos2(rect.center().x, rect.bottom() - 16.0), Align2::CENTER_CENTER, 11.0)
+    let font_size = if prominent { 11.5 } else { 11.0 };
+    let font = FontId::proportional(font_size);
+    let text_width = if prominent { size.x - 9.0 } else { size.x - 29.0 };
+    let display = fitted_button_label(visible_name, prominent || size.y >= 25.0, |line| {
+        ui.painter().layout_no_wrap(line.to_owned(), font.clone(), tint).size().x <= text_width
+    });
+    let (text_pos, alignment) = if prominent {
+        (pos2(rect.center().x, rect.bottom() - 17.0), Align2::CENTER_CENTER)
     } else {
-        (pos2(rect.left() + 22.0, rect.center().y), Align2::LEFT_CENTER, 10.5)
+        (pos2(rect.left() + 23.0, rect.center().y), Align2::LEFT_CENTER)
     };
-    ui.painter().text(text_pos, alignment, display, FontId::proportional(font_size), tint);
+    ui.painter().text(text_pos, alignment, display, font, tint);
     let response = response.on_hover_text(name);
     icons::describe_control(ui, &response, name, None, false);
     known && response.clicked()
@@ -253,12 +393,19 @@ fn tool_button(ui: &mut egui::Ui, (icon, command, label): Tool, prominent: bool,
 
 /// AutoCAD-like command groups: one prominent action and a tight stack of
 /// secondary actions, while leaving the full command names in accessibility.
-fn command_group(ui: &mut egui::Ui, tab: &str, group: &Group, clicked: &mut Option<&'static str>) {
+fn command_group(ui: &mut egui::Ui, tab: &str, group: &Group, roomy: bool, clicked: &mut Option<&'static str>) {
     let Some(&primary) = group.tools.first() else { return };
     let secondary = &group.tools[1..];
     let dense = secondary.len() > 3;
     let columns = if dense { 2 } else { 1 };
-    let secondary_size = if dense { vec2(92.0, 20.0) } else { vec2(116.0, 26.5) };
+    // Give localized labels room on desktop screens; on narrow windows keep
+    // the earlier compact geometry so the properties controls stay reachable.
+    let secondary_size = match (roomy, dense) {
+        (true, true) => vec2(118.0, 20.0),
+        (true, false) => vec2(154.0, 27.0),
+        (false, true) => vec2(92.0, 20.0),
+        (false, false) => vec2(116.0, 26.5),
+    };
     ui.horizontal(|ui| {
         ui.spacing_mut().item_spacing.x = 3.0;
         if tool_button(ui, primary, true, vec2(68.0, 82.0)) {
@@ -594,6 +741,7 @@ pub fn show(app: &mut CadApp, ui: &mut egui::Ui) {
         .exact_size(158.0)
         .frame(egui::Frame::NONE.fill(t.chrome).inner_margin(egui::Margin::symmetric(7, 3)))
         .show(ui, |ui| {
+            let roomy = ui.available_width() >= 1600.0;
             ui.horizontal(|ui| {
                 ui.spacing_mut().item_spacing.x = 3.0;
                 for (key, pt, en) in TABS {
@@ -616,7 +764,7 @@ pub fn show(app: &mut CadApp, ui: &mut egui::Ui) {
                             } else if selected == "home" && group.label == "Properties" {
                                 property_controls(app, ui);
                             } else {
-                                command_group(ui, &selected, group, &mut clicked);
+                                command_group(ui, &selected, group, roomy, &mut clicked);
                             }
                             let body_used = ui.cursor().top() - body_top;
                             ui.add_space((GROUP_BODY_HEIGHT - body_used).max(0.0));
@@ -624,7 +772,7 @@ pub fn show(app: &mut CadApp, ui: &mut egui::Ui) {
                                 vec2(ui.min_rect().width(), GROUP_CAPTION_HEIGHT),
                                 egui::Layout::top_down(egui::Align::Center),
                                 |ui| {
-                                    ui.label(egui::RichText::new(crate::i18n::t(group.label)).size(10.5).color(t.text_dim));
+                                    ui.label(egui::RichText::new(crate::i18n::t(group.label)).size(11.0).color(t.text_dim));
                                 },
                             );
                         });
@@ -716,6 +864,30 @@ mod tests {
     }
 
     #[test]
+    fn secondary_tabs_group_existing_commands_without_duplicates() {
+        let expected: &[(&str, &[&str])] = &[
+            ("insert", &["Block", "Attributes", "Reference", "Data"]),
+            ("annotate", &["Text", "Dimension", "Leader", "Table"]),
+            ("parametric", &["Geometric Constraints", "Dimensional Constraints", "Manage", "Display"]),
+            ("view", &["Navigate", "Views", "Viewports", "Display", "Palettes"]),
+            ("manage", &["Utilities", "Drawing", "Settings", "Content"]),
+            ("output", &["Plot", "Export", "Styles"]),
+            ("3d", &["Navigate", "View"]),
+        ];
+        for &(tab, names) in expected {
+            let actual: Vec<_> = groups(tab).iter().map(|group| group.label).collect();
+            assert_eq!(actual.as_slice(), names, "Ribbon groups on tab {tab}");
+            let mut commands = std::collections::HashSet::new();
+            for group in groups(tab) {
+                for (_, command, _) in group.tools {
+                    assert!(commands.insert(*command), "duplicated command on tab {tab}: {command}");
+                }
+            }
+        }
+        assert!(THREE_D.iter().flat_map(|group| group.tools).all(|(_, command, _)| *command != "3dorbit"));
+    }
+
+    #[test]
     fn lineweight_samples_reflect_the_selected_thickness() {
         assert!(weight_sample_width("0.05 mm") < weight_sample_width("0.50 mm"));
         assert!(weight_sample_width("0.50 mm") < weight_sample_width("2.11 mm"));
@@ -724,8 +896,12 @@ mod tests {
     }
 
     #[test]
-    fn command_labels_truncate_by_characters() {
-        assert_eq!(short_label("Propriedades", 11), "Propriedad…");
-        assert_eq!(short_label("Line", 11), "Line");
+    fn button_labels_fit_by_available_width_and_wrap_before_truncating() {
+        let at_most_16_chars = |line: &str| line.chars().count() <= 16;
+        assert_eq!(fitted_button_label("Concordância", false, at_most_16_chars), "Concordância");
+        assert_eq!(fitted_button_label("Linha de chamada múltipla", true, at_most_16_chars), "Linha de chamada\nmúltipla");
+        assert_eq!(fitted_button_label("Propriedades da camada", true, at_most_16_chars), "Propriedades\nda camada");
+        assert_eq!(fitted_button_label("Line", false, at_most_16_chars), "Line");
+        assert_eq!(fitted_button_label("Concordância", false, |line| line.chars().count() <= 9), "Concordâ…");
     }
 }
