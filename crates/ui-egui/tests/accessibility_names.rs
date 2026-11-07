@@ -39,6 +39,16 @@ fn unnamed_text_inputs(h: &Harness<'_, CadApp>) -> Vec<String> {
         .collect()
 }
 
+/// The Home ribbon's three dropdowns are visible in every drawing, including
+/// while modal managers are open. They must each have a semantic control name.
+#[test]
+fn ribbon_layer_and_properties_dropdowns_are_accessibly_named() {
+    let h = harness(CadApp::new(Session::new(), Services::default()));
+    for name in ["Current layer", "Linetype", "Lineweight"] {
+        h.get_by_role_and_label(Role::ComboBox, name);
+    }
+}
+
 /// The Options ▸ Files autosave path field is labelled by its visible row label, and no text input in the dialog is unnamed.
 #[test]
 fn options_autosave_path_has_a_semantic_label() {

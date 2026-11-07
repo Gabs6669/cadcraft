@@ -16,6 +16,13 @@ fn harness(state: Option<UiState>, width: f32, scale: f32) -> Harness<'static, C
     app.run("view.set", json!({"center":[100,70],"height":220})).unwrap();
     if let Some(state) = state {
         app.ui = state;
+    } else {
+        // Docking workflows exercise the classic Tool Sets panel, not the new ribbon.
+        // The default ribbon keeps Tool Sets hidden until explicitly opened.
+        app.ui.autocad_ribbon = false;
+        app.ui.show_toolsets = true;
+        app.ui.show_palettes = true;
+        app.ui.docking = cadcraft_ui_egui::docking::default_workspace();
     }
     app.ui.in_window_menu = false;
     app.integrated_titlebar = true;

@@ -109,6 +109,19 @@ pub fn default_workspace() -> Workspace {
     })
 }
 
+/// Drafting-ribbon workspace: layers and common object properties live in the
+/// ribbon. Side palettes retain their docking locations and can be reopened.
+pub fn ribbon_workspace() -> Workspace {
+    let mut workspace = default_workspace();
+    if workspace.set_visible(Panel::ToolSets, false, None, permissions).is_err()
+        || workspace.set_visible(Panel::Layers, false, None, permissions).is_err()
+        || workspace.set_visible(Panel::Properties, false, None, permissions).is_err()
+    {
+        return default_workspace();
+    }
+    workspace
+}
+
 /// The dock a panel belongs in: Tool Sets on the left, the palettes on the right.
 fn home_side(panel: Panel) -> (Side, f32) {
     if panel == Panel::ToolSets { (Side::Start, TOOL_SETS_WIDTH) } else { (Side::End, PALETTES_WIDTH) }
@@ -281,9 +294,12 @@ fn sync(workspace: &mut Workspace, app: &crate::CadApp) -> Result<(), String> {
         set_visible(workspace, Panel::Layers, false)?;
         set_visible(workspace, Panel::Properties, false)?;
     } else if !workspace.layout.contains(&Panel::Layers) && !workspace.layout.contains(&Panel::Properties) {
-        // Reopen the palette that closed last before the one recorded beside it.
+        // The ribbon already contains Layers: reopening palettes in that mode
+        // must not unexpectedly put the Layers palette on the right again.
         set_visible(workspace, Panel::Properties, true)?;
-        set_visible(workspace, Panel::Layers, true)?;
+        if !app.ui.autocad_ribbon {
+            set_visible(workspace, Panel::Layers, true)?;
+        }
     }
     Ok(())
 }
@@ -296,7 +312,7 @@ fn publish_visibility(app: &mut crate::CadApp, workspace: &Workspace) {
 pub fn command(app: &mut crate::CadApp, reset: bool, params: &Value) -> Result<Value, String> {
     let mut workspace = app.ui.docking.clone();
     if reset {
-        workspace = default_workspace();
+        workspace = if app.ui.autocad_ribbon { ribbon_workspace() } else { default_workspace() };
     } else {
         sync(&mut workspace, app)?;
         apply_command(&mut workspace, params)?;
@@ -316,7 +332,7 @@ pub fn show(app: &mut crate::CadApp, ui: &mut egui::Ui) {
     let mut workspace = app.ui.docking.clone();
     if let Err(error) = validate(&workspace).and_then(|()| sync(&mut workspace, app)) {
         app.set_status(format!("Panel layout could not be restored: {error}"));
-        workspace = default_workspace();
+        workspace = if app.ui.autocad_ribbon { ribbon_workspace() } else { default_workspace() };
         let _ = sync(&mut workspace, app);
     }
     // Bodies can dispatch commands (including the drawing's typed command line).

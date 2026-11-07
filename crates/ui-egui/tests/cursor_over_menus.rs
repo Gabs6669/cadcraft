@@ -15,6 +15,11 @@ use serde_json::json;
 fn harness() -> Harness<'static, CadApp> {
     let mut app = CadApp::new(Session::new(), Services::default());
     app.ui.in_window_menu = true;
+    // These tests exercise the classic menu and docked-palette layout, not the optional ribbon.
+    // With the ribbon enabled, its "View" tab duplicates the menu title and the palette moves.
+    app.ui.autocad_ribbon = false;
+    app.ui.show_palettes = true;
+    app.ui.docking = cadcraft_ui_egui::docking::default_workspace();
     let mut harness = Harness::builder().with_size(vec2(1280.0, 760.0)).build_ui_state(
         |ui, app: &mut CadApp| {
             app.logic(&ui.ctx().clone());
@@ -98,8 +103,12 @@ fn docked_palettes_keep_the_os_cursor_visible() {
     hover_canvas(&mut harness);
     assert_eq!(cursor(&harness), egui::CursorIcon::None);
 
-    // The Tool Sets palette docked left of the drawing.
-    harness.hover_at(egui::pos2(100.0, 300.0));
+    // Properties is docked on the right by default; Layers moves to the ribbon.
+    // Use a point in the visible right palette, rather than the drawing at x=100.
+    let palette = egui::pos2(1100.0, 300.0);
+    assert!(harness.state().ui.docking.layout.contains(&cadcraft_ui_egui::docking::Panel::Properties));
+    assert!(!harness.state().canvas.rect.is_some_and(|canvas| canvas.contains(palette)), "the palette is outside the canvas");
+    harness.hover_at(palette);
     harness.run_steps(3);
     assert_ne!(cursor(&harness), egui::CursorIcon::None, "moving to a palette restores the OS cursor");
 }

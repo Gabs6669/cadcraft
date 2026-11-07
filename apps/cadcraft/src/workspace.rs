@@ -250,9 +250,12 @@ mod tests {
         let (mut store, _, _) = Workspace::at(Some(path.clone()));
         let mut ui = UiState::default();
         let mut app = cadcraft_ui_egui::CadApp::new(cadcraft_engine::Session::default(), Default::default());
+        app.run("ui.dock", json!({"operation":"open", "panel":"layers"})).unwrap();
+        app.run("ui.dock", json!({"operation":"open", "panel":"properties"})).unwrap();
         app.run("ui.dock", json!({"operation":"move", "panel":"layers", "target":"properties", "zone":"left"})).unwrap();
         app.run("ui.dock", json!({"operation":"float", "panel":"properties", "rect":[120,90,340,410]})).unwrap();
         ui.docking = app.ui.docking;
+        ui.show_palettes = true;
         ui.docking.set_visible(Panel::ToolSets, false, None, permissions).unwrap();
         ui.show_toolsets = false;
         store.save_if_changed(&ui, Instant::now()).unwrap();
@@ -272,7 +275,6 @@ mod tests {
 
     #[test]
     fn split_frame_layout_file_loads_as_the_dock_default_with_its_other_settings() {
-        use cadcraft_ui_egui::docking::default_workspace;
         // Written as CADCraft 0.7 writes it: craft-ui's v1 layout with no docking version, a
         // floating window as one `{panels, active, rect}` group, Tool Sets closed.
         let file = r#"{"version":1,"workspace":{
@@ -294,8 +296,8 @@ mod tests {
         assert_eq!(ui.toolset_tab, "Modeling");
         assert_eq!(ui.history_lines, 4);
         assert!(!ui.show_toolsets && ui.show_palettes && !ui.show_toolbar);
-        assert_eq!(ui.docking.layout, default_workspace().layout);
-        assert!(ui.docking.hidden.is_empty(), "{:?}", ui.docking.hidden);
+        assert_eq!(ui.docking.layout, cadcraft_ui_egui::docking::ribbon_workspace().layout);
+        assert_eq!(ui.docking.hidden, cadcraft_ui_egui::docking::ribbon_workspace().hidden);
         fs::remove_dir_all(directory).unwrap();
     }
 
@@ -376,7 +378,8 @@ mod tests {
         let directory = temp_dir();
         let path = directory.join("workspace.json");
         let (mut store, _, _) = Workspace::at(Some(path.clone()));
-        let mut ui = UiState { show_palettes: false, ..Default::default() };
+        // Differ from the ribbon's defaults so the initial good file is written.
+        let mut ui = UiState { history_lines: 4, show_palettes: false, ..Default::default() };
         store.save_if_changed(&ui, Instant::now()).unwrap();
         let good = fs::read(&path).unwrap();
         ui.collapsed_groups = vec!["x".repeat(257)];
@@ -392,7 +395,8 @@ mod tests {
         let (mut store, _, _) = Workspace::at(Some(path.clone()));
         // Simulate a destination becoming unavailable after startup.
         fs::create_dir(&path).unwrap();
-        let ui = UiState { show_palettes: false, ..Default::default() };
+        // Persist a changed state: show_palettes=false is already the ribbon default.
+        let ui = UiState { history_lines: 4, show_palettes: false, ..Default::default() };
         let first_error = store.save_if_changed(&ui, Instant::now()).unwrap_err();
         fs::remove_dir(&path).unwrap();
         assert_eq!(store.save_if_changed(&ui, Instant::now()).unwrap_err(), first_error);

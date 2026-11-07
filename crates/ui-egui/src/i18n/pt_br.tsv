@@ -49,6 +49,7 @@
 	Angle	Ângulo
 	Angular	Angular
 	Annotation Visibility	Visibilidade de anotações
+	Annotation	Anotação
 	Annotation scale	Escala de anotação
 	Annotative Object Scale	Escala do objeto anotativo
 	Annotative Update	Atualização anotativa
@@ -67,6 +68,7 @@
 	Attribute	Atributo
 	Attribute Definition	Definição de atributo
 	Attribute Display	Exibição de atributos
+	Attributes	Atributos
 	Audit	Auditar desenho
 	Auto (system language)	Automático (idioma do sistema)
 	Auto Constrain	Restringir automaticamente
@@ -166,6 +168,7 @@
 	Constraint Bars	Barras de restrição
 	Constraint Settings	Configurações de restrição
 	Construction Line	Linha de construção
+	Content	Conteúdo
 	Contents	Conteúdo
 	Continue	Continuar
 	Contributors	Colaboradores
@@ -200,6 +203,7 @@
 	DWG Reference...	Referência DWG...
 	DXF	DXF
 	Dark	Escuro
+	Data	Dados
 	Data Extraction...	Extração de dados...
 	Data Link...	Vínculo de dados...
 	Default	Padrão
@@ -235,6 +239,7 @@
 	Dimension Edit	Editar cota
 	Dimension Objects Only	Somente objetos de cota
 	Dimension Space	Espaçar cotas
+	Dimension Style	Estilo de cota
 	Dimension Style Override	Substituição de estilo de cota
 	Dimension Style...	Estilo de cota...
 	Dimension Text Edit	Editar texto da cota
@@ -254,8 +259,10 @@
 	Drafting	Desenho
 	Drafting Settings	Configurações de desenho
 	Drafting Settings...	Configurações de desenho...
+	Drafting Ribbon	Faixa de opções de desenho
 	Draw	Desenhar
 	Draw Order	Ordem de exibição
+	Drawing	Desenho
 	Drawing (DWG)	Desenho (DWG)
 	Drawing (DXF)	Desenho (DXF)
 	Drawing Limits	Limites do desenho
@@ -533,6 +540,7 @@
 	Make it a block of this drawing, keeping its layer names	Torná-lo um bloco deste desenho, mantendo os nomes das camadas
 	Make it a block of this drawing; its layers become NAME$0$LAYER	Torná-lo um bloco deste desenho; suas camadas passam a se chamar NAME$0$LAYER
 	Make...	Criar...
+	Manage	Gerenciar
 	Match Layer	Igualar camada
 	Match Properties	Copiar propriedades
 	Measure	Medir
@@ -568,6 +576,7 @@
 	Name (A–Z)	Nome (A–Z)
 	Named Viewports...	Viewports nomeados...
 	Named Views...	Vistas nomeadas...
+	Navigate	Navegar
 	Nearest	Mais próximo
 	New	Novo
 	New (metric)	Novo (métrico)
@@ -653,7 +662,9 @@
 	Pan Right	Pan para a direita
 	Pan Up	Pan para cima
 	Paper Space	Espaço do papel
+	Palettes	Paletas
 	Parallel	Paralelo
+	Parameters	Parâmetros
 	Parameters Manager	Gerenciador de parâmetros
 	Parametric	Paramétrico
 	Paste	Colar
@@ -689,6 +700,7 @@
 	Recent Input	Entradas recentes
 	Rectangular snap	Snap retangular
 	Reference Manager	Gerenciador de referências
+	Reference	Referência
 	Reference Name	Nome da referência
 	References: {n}	Referências: {n}
 	Reinitialize	Reinicializar
@@ -706,6 +718,7 @@
 	Screen magnifiers, screen readers and recorders follow the system cursor.	Ampliadores de tela, leitores de tela e gravadores acompanham o cursor do sistema.
 	Select Similar	Selecionar semelhantes
 	Select objects first, then choose a command	Selecione os objetos primeiro e depois escolha um comando
+	Select objects to match to the current layer	Selecione os objetos para igualar à camada atual
 	Selection	Seleção
 	Send Hatches to Back	Enviar hachuras para trás
 	Send Under Objects	Enviar sob os objetos
@@ -927,6 +940,7 @@
 	Set Current Dimension Style	Definir estilo de cota atual
 	Set Current Text Style	Definir estilo de texto atual
 	Set Layer Properties	Definir propriedades da camada
+	Settings	Configurações
 	Set Properties	Definir propriedades
 	Set Table Cell	Definir célula da tabela
 	Set Variable	Definir variável
@@ -1093,6 +1107,7 @@
 	Status	Status
 	Status Bar	Barra de status
 	Stretch	Esticar
+	Styles	Estilos
 	Style: Standard	Estilo: Standard
 	Subtract	Subtrair
 	Sweep	Varredura
@@ -1114,6 +1129,7 @@
 	Text	Texto
 	Text Editor	Editor de texto
 	Text Height	Altura do texto
+	Text Style	Estilo de texto
 	Text Style...	Estilo de texto...
 	Text height	Altura do texto
 	Text override	Substituição de texto
@@ -1153,6 +1169,7 @@
 	User	Usuário
 	User Parameters	Parâmetros do usuário
 	User Preferences	Preferências do usuário
+	Utilities	Utilitários
 	Username	Nome de usuário
 	VP Color	Cor do VP
 	VP Freeze	Congelar no VP
@@ -1171,6 +1188,7 @@
 	VerticalDistance	Distância vertical
 	View	Exibir
 	ViewCube	ViewCube
+	Views	Vistas
 	Viewport	Viewport
 	Viewport Layer Freeze	Congelamento de camada no viewport
 	Viewport Properties	Propriedades do viewport

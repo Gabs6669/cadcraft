@@ -158,17 +158,24 @@ fn has_nextest() -> bool {
 /// nextest is missing, then the doctests, which nextest does not run.
 fn cmd_test() -> Result<(), String> {
     let mut c = cargo();
-    if has_nextest() {
-        c.args(["nextest", "run", "--workspace", "--lib", "--bins", "--tests"]);
-        run(c, "cargo nextest run --workspace --lib --bins --tests")?;
+    let tests = if has_nextest() {
+        c.args(["nextest", "run", "--workspace", "--lib", "--bins", "--tests", "--no-fail-fast"]);
+        run(c, "cargo nextest run --workspace --lib --bins --tests --no-fail-fast")
     } else {
         eprintln!("note: cargo-nextest is not installed (cargo install cargo-nextest --locked); running cargo test");
-        c.args(["test", "--workspace", "--lib", "--bins", "--tests"]);
-        run(c, "cargo test --workspace --lib --bins --tests")?;
-    }
+        c.args(["test", "--workspace", "--lib", "--bins", "--tests", "--no-fail-fast"]);
+        run(c, "cargo test --workspace --lib --bins --tests --no-fail-fast")
+    };
+    // Run doctests as well, even if a unit or integration test failed. Both results
+    // are still reported as a failure to CI after all test groups have run.
     let mut c = cargo();
-    c.args(["test", "--workspace", "--doc"]);
-    run(c, "cargo test --workspace --doc")
+    c.args(["test", "--workspace", "--doc", "--no-fail-fast"]);
+    let docs = run(c, "cargo test --workspace --doc --no-fail-fast");
+    match (tests, docs) {
+        (Ok(()), Ok(())) => Ok(()),
+        (Err(error), Ok(())) | (Ok(()), Err(error)) => Err(error),
+        (Err(tests_error), Err(docs_error)) => Err(format!("{tests_error}; {docs_error}")),
+    }
 }
 
 /// The translation gap report (`cadcraft-ui-egui`'s ignored `i18n::tests::translation_gaps`).

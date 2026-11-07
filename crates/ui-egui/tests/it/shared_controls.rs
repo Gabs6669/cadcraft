@@ -91,12 +91,15 @@ fn drafting_button_keyboard_disabled_state_and_click_cancellation() {
 
 #[test]
 fn drafting_palette_pointer_and_keyboard_start_the_same_commands() {
+    let mut app = app();
+    app.ui.autocad_ribbon = false;
+    app.ui.show_toolsets = true;
     let mut h = Harness::builder().with_size(vec2(1600.0, 1000.0)).build_ui_state(
         |ui, app: &mut CadApp| {
             app.logic(&ui.ctx().clone());
             app.ui(ui);
         },
-        app(),
+        app,
     );
     h.run_steps(5);
     h.get_by_label("Line").click();
@@ -118,12 +121,14 @@ fn drafting_palette_pointer_and_keyboard_start_the_same_commands() {
 fn right_palettes_collapse_arrow_hides_menu() {
     // Install the production font chain before the first pass; the fixture draws the palette
     // directly and would otherwise fall back to egui's fonts instead of the app's chain.
+    let mut state = app();
+    state.ui.show_palettes = true;
     let mut h = Harness::builder().with_size(vec2(1600.0, 1000.0)).with_context_setup(|ctx| theme::install_fonts(ctx, "en")).build_ui_state(
         |ui, app: &mut CadApp| {
             app.logic(&ui.ctx().clone());
             cadcraft_ui_egui::palettes::right_palettes(app, ui);
         },
-        app(),
+        state,
     );
     h.run_steps(5);
     assert!(h.state().ui.show_palettes);
@@ -136,12 +141,14 @@ fn right_palettes_collapse_arrow_hides_menu() {
 
 #[test]
 fn toolsets_collapse_arrow_hides_menu() {
+    let mut app = app();
+    app.ui.show_toolsets = true;
     let mut h = Harness::builder().with_size(vec2(1600.0, 1000.0)).build_ui_state(
         |ui, app: &mut CadApp| {
             app.logic(&ui.ctx().clone());
             cadcraft_ui_egui::palettes::toolsets(app, ui);
         },
-        app(),
+        app,
     );
     h.run_steps(5);
     assert!(h.state().ui.show_toolsets);

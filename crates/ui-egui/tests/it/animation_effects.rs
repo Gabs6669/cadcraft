@@ -110,10 +110,14 @@ fn wheel_scrolling_glides_only_while_animation_effects_show() {
     let scroll = |ctx: &egui::Context| ctx.input(|i| i.smooth_scroll_delta.y);
 
     let (mut a, ctx) = (app(), egui::Context::default());
+    // This tests egui's wheel smoothing, not the horizontal ScrollArea in the new ribbon.
+    // Keep that widget from consuming the raw wheel input before the assertion reads it.
+    a.ui.autocad_ribbon = false;
     let (first, _) = frame(&mut a, &ctx, notches(), scroll);
     assert!(first < 0.0 && first > -3.0 * line, "egui spreads the notches over several frames: {first}");
 
     let (mut a, ctx) = (app(), egui::Context::default());
+    a.ui.autocad_ribbon = false;
     a.system_animations = Some(false);
     assert_eq!(frame(&mut a, &ctx, notches(), scroll).0, -3.0 * line, "all of it in the frame it arrives");
     assert_eq!(frame(&mut a, &ctx, Vec::new(), scroll).0, 0.0, "and nothing afterwards");
